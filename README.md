@@ -1,4 +1,4 @@
-# Demo: Bare-metal programming of Arduino
+# Bare-metal programming of Arduino: RTC DS1302
 
 ## Prerequisites
 
@@ -25,3 +25,13 @@ echo "PORT=$(ls /dev/tty.usb*)" > .env
 2. Confirm that the on-board LED-light blinks.
 3. ???
 4. Profit
+
+## Todo
+
+- [ ] Implement 3-wire serial interface
+- [ ] Implement read/write from/to RTC
+  - [ ] Read datetime
+  - [ ] Parse datetime to `struct datetime_t`
+  - [ ] Write datetime
+  - [ ] Set 12/25h mode
+- [ ] Read from RTC on timer interrupt every second
