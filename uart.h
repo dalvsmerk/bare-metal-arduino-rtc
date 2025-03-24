@@ -18,11 +18,12 @@
 
 #define UFRAME_8BIT 0x06 // 0b0110
 
-void    uart_init();
+void    uart_init(void);
 void    uart_tx(uint8_t data);
+void    uart_txs(char* data);
 uint8_t uart_rx(void);
 
-inline void uart_init() {
+inline void uart_init(void) {
   // set baud rate
   UBRR0H = UBRRH_VALUE;
   UBRR0L = UBRRL_VALUE;
@@ -48,4 +49,12 @@ inline uint8_t uart_rx(void) {
     ;
 
   return UDR0;
+}
+
+/**
+  * @param data null-terminated string
+  */
+void uart_txs(char* data) {
+  while (*data != '\0')
+    uart_tx(*(data++));
 }

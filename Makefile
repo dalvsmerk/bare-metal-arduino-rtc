@@ -5,7 +5,7 @@ F_CPU  = 16000000UL
 
 CC 		 = avr-gcc
 CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Os
-OBJ 	 = main.o
+OBJ 	 = main.o spi.o
 TARGET = main
 
 all: $(TARGET).hex

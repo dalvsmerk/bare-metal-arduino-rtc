@@ -33,5 +33,5 @@ echo "PORT=$(ls /dev/tty.usb*)" > .env
   - [ ] Read datetime
   - [ ] Parse datetime to `struct datetime_t`
   - [ ] Write datetime
-  - [ ] Set 12/25h mode
+  - [ ] Set 12/24h mode
 - [ ] Read from RTC on timer interrupt every second

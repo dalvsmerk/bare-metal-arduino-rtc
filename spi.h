@@ -1,16 +1,16 @@
 /*
- * This module implements 3-Wire serial interface
+ * 3-Wire serial interface
  */
 #pragma once
 
-#define uint8_t char
+#include "avr/io.h"
 
 typedef struct spi_t {
-  int pin_clk;
-  int pin_data;
-  int pin_ce;
+  int clk;
+  int data;
+  int ce;
 } spi_t;
 
-void    spi_init(spi_t config);
-uint8_t spi_read(spi_t config);
-void    spi_write(uint8_t data);
+void    spi_init(spi_t *io);
+uint8_t spi_read(spi_t *io);
+void    spi_write(spi_t *io, uint8_t data);
