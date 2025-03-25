@@ -5,11 +5,16 @@
 #include "logger.h"
 #include "uart.h"
 #include "spi.h"
+#include "pin.h"
 
 logger_t logger = {
   .init = uart_init,
   .debug = uart_txs,
 };
+
+#define CLK 12
+#define DATA 11
+#define CE 10
 
 int main(void) {
   logger.init();
@@ -19,9 +24,9 @@ int main(void) {
   // PORTB &= ~(1 << PB5);
 
   spi_t spi_io = {
-    .clk = 12, 
-    .data = 11, 
-    .ce = 10 
+    .clk = CLK, 
+    .data = DATA, 
+    .ce = CE
   };
 
   spi_init(&spi_io);
