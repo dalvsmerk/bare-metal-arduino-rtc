@@ -5,6 +5,8 @@
   */
 #pragma once
 
+#include "int.h"
+
 typedef enum pin_mode {
   INPUT = 0,
   OUTPUT = 1
@@ -16,7 +18,8 @@ typedef enum logic_level {
 } logic_level_t;
 
 // pin should be unsigned but whatever
-void pin_mode(int pin, pin_mode_t mode);
-void pin_set(int pin, logic_level_t value);
-void pin_high(logic_level_t pin);
-void pin_low(logic_level_t pin);
+void    pin_mode(int pin, pin_mode_t mode);
+void    pin_write(int pin, logic_level_t value);
+void    pin_high(int pin);
+void    pin_low(int pin);
+uint8_t pin_read(int pin);

@@ -13,8 +13,7 @@
 
 #include "avr/io.h"
 #include <util/setbaud.h>
-
-#define uint8_t unsigned char
+#include "int.h"
 
 #define UFRAME_8BIT 0x06 // 0b0110
 
