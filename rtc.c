@@ -2,7 +2,7 @@
 #include "pin.h"
 #include "util/delay.h"
 
-#define DELAY_US 1 // reconsider shorter delay if possible (using baud rate)
+#define DELAY_US 1
 
 #define CLK_CYCLE(clk_pin) \
   do {                     \
@@ -14,9 +14,13 @@
 
 void rtc_init(spi_t *io) {
   pin_mode(io->sclk, OUTPUT);
+  pin_mode(io->ce, OUTPUT);
+
+  pin_low(io->sclk);
+  pin_low(io->ce);
+
   // Call pin_mode(DATA, <OUTPUT or INPUT>); when reading/writing data from pin
   pin_mode(io->data, INPUT);
-  pin_mode(io->ce, OUTPUT);
   
   // Enable write to registers
   rtc_write(io, WriteWriteProtect, 0x0);

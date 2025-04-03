@@ -14,8 +14,10 @@ logger_t logger = {
   .debug_byte = uart_tx
 };
 
+#define LED 13
+
 #define SCLK 12
-#define DATA 11
+#define DATA LED // 11
 #define CE 10
 
 void dec2str(uint8_t year, char* dest, int len);
