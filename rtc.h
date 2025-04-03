@@ -5,34 +5,58 @@
 
 #include "avr/io.h"
 
+#define DELAY_US 1 // reconsider shorter delay if possible (using baud rate)
+
+#define CLK_CYCLE(clk_pin) \
+  do {                     \
+    pin_high(clk_pin);     \
+    _delay_us(DELAY_US);   \
+    pin_low(clk_pin);      \
+    _delay_us(DELAY_US);   \
+  } while(0)
+
 typedef struct spi_t {
   int clk;
   int data;
   int ce;
 } spi_t;
 
-typedef enum rtc_cmd_read_t {
-  SEC_R  = 0x81,
-  MIN_R  = 0x83,
-  HOUR_R = 0x85,
-  DATE_R = 0x87,
-  MON_R  = 0x89,
-  DAY_R  = 0x8b,
-  YEAR_R = 0x8d
-} rtc_cmd_read_t;
+typedef enum rtc_cmd_t {
+  ReadSecond        = 0x81,
+  ReadMinute        = 0x83,
+  ReadHour          = 0x85,
+  ReadDate          = 0x87,
+  ReadMonth         = 0x89,
+  ReadDay           = 0x8b,
+  ReadYear          = 0x8d,
+  ReadWriteProtect  = 0x8f,
+  ReadBurstClock    = 0xbf,
+  WriteSecond       = 0x80,
+  WriteMinute       = 0x82,
+  WriteHour         = 0x84,
+  WriteDate         = 0x86,
+  WriteMonth        = 0x88,
+  WriteDay          = 0x8a,
+  WriteYear         = 0x8c,
+  WriteWriteProtect = 0x8e
+} rtc_cmd_t;
 
-typedef enum rtc_cmd_write_t {
-  SEC_W  = 0x80,
-  MIN_W  = 0x82,
-  HOUR_W = 0x84,
-  DATE_W = 0x86,
-  MON_W  = 0x88,
-  DAY_W  = 0x8a,
-  YEAR_W = 0x8c
-} rtc_cmd_write_t;
+typedef struct rtc_datetime_t {
+  int sec;
+  int min;
+  int hour;
+  int day;
+  int date;
+  int month;
+  int year;
+} rtc_datetime_t;
 
 void    rtc_init(spi_t *io);
-uint8_t rtc_read(spi_t *io, rtc_cmd_read_t cmd);
-void    rtc_write(spi_t *io, rtc_cmd_write_t cmd, uint8_t data);
+uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd);
+void    rtc_burst_read(spi_t *io, rtc_datetime_t *dst);
+void    rtc_write(spi_t *io, rtc_cmd_t cmd, uint8_t data);
 
-uint8_t rtc_read_year(spi_t *io);
+void rtc_set_datetime(spi_t *io, rtc_datetime_t *datetime);
+
+uint8_t dec2bcd(uint8_t dec);
+uint8_t bcd2dec(uint8_t bcd);
