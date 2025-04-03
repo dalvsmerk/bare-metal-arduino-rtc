@@ -29,6 +29,8 @@ void rtc_init(spi_t *io) {
 uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
   pin_low(io->sclk);
   pin_high(io->ce);
+
+  _delay_us(1);
   
   // Write read-command byte
   pin_mode(io->data, OUTPUT);
@@ -47,12 +49,18 @@ uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
 
   // Read byte from RTC
   pin_mode(io->data, INPUT);
+  pin_high(io->data); // enable pull up
+  pin_low(io->sclk);
   uint8_t data = 0;
 
   for (int bit = 0; bit < 8; bit++) {
     CLK_CYCLE(io->sclk);
     data |= (pin_read(io->data) << bit);
   }
+
+  pin_low(io->data); // disable pull-up again
+  pin_mode(io->data, OUTPUT);
+  pin_low(io->data);  
 
   pin_low(io->ce);
 

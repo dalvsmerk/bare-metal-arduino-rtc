@@ -17,7 +17,7 @@ logger_t logger = {
 #define LED 13
 
 #define SCLK 12
-#define DATA LED // 11
+#define DATA 11
 #define CE 10
 
 void dec2str(uint8_t year, char* dest, int len);
@@ -36,26 +36,34 @@ int main(void) {
 
   rtc_init(&rtc_io);
 
-  uint8_t sec = rtc_read(&rtc_io, ReadSecond);
-  rtc_write(&rtc_io, WriteSecond, sec & 0x7f);
+  // uint8_t sec = rtc_read(&rtc_io, ReadSecond);
+  // rtc_write(&rtc_io, WriteSecond, sec & 0x7f);
 
-  rtc_datetime_t dt = {
-    .sec = 1,
-    .min = 2,
-    .hour = 6,
-    .day = 3,
-    .date = 2,
-    .month = 4,
-    .year = 12
-  };
+  // uint8_t ctrl = rtc_read(&rtc_io, 0x8F);
+  // logger.debug_byte(ctrl);  // should not be 0x00 unless write-protect is set
 
-  rtc_set_datetime(&rtc_io, &dt);
+  // rtc_datetime_t dt = {
+  //   .sec = 1,
+  //   .min = 2,
+  //   .hour = 21,
+  //   .day = 3,
+  //   .date = 2,
+  //   .month = 4,
+  //   .year = 12
+  // };
 
-  rtc_burst_read(&rtc_io, &dt);
-  logger.debug_byte(dt.sec);
-  logger.debug_byte(dt.min);
-  logger.debug_byte(dt.hour);
-  logger.debug_byte(dt.year);
+  // rtc_set_datetime(&rtc_io, &dt);
+
+  // rtc_burst_read(&rtc_io, &dt);
+  // logger.debug_byte(bcd2dec(dt.sec));
+  // logger.debug_byte(bcd2dec(dt.min));
+  // logger.debug_byte(bcd2dec(dt.hour & 0x3f));
+  // logger.debug_byte(bcd2dec(dt.year));
+
+  while (1) {
+    logger.debug_byte(bcd2dec(rtc_read(&rtc_io, ReadSecond) & 0x7f));
+    _delay_ms(1000);
+  }
 
   while (1)
     ;
