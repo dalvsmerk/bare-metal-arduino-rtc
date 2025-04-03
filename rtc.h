@@ -5,18 +5,8 @@
 
 #include "avr/io.h"
 
-#define DELAY_US 1 // reconsider shorter delay if possible (using baud rate)
-
-#define CLK_CYCLE(clk_pin) \
-  do {                     \
-    pin_high(clk_pin);     \
-    _delay_us(DELAY_US);   \
-    pin_low(clk_pin);      \
-    _delay_us(DELAY_US);   \
-  } while(0)
-
 typedef struct spi_t {
-  int clk;
+  int sclk;
   int data;
   int ce;
 } spi_t;

@@ -2,8 +2,18 @@
 #include "pin.h"
 #include "util/delay.h"
 
+#define DELAY_US 1 // reconsider shorter delay if possible (using baud rate)
+
+#define CLK_CYCLE(clk_pin) \
+  do {                     \
+    pin_high(clk_pin);     \
+    _delay_us(DELAY_US);   \
+    pin_low(clk_pin);      \
+    _delay_us(DELAY_US);   \
+  } while(0)
+
 void rtc_init(spi_t *io) {
-  pin_mode(io->clk, OUTPUT);
+  pin_mode(io->sclk, OUTPUT);
   // Call pin_mode(DATA, <OUTPUT or INPUT>); when reading/writing data from pin
   pin_mode(io->data, INPUT);
   pin_mode(io->ce, OUTPUT);
@@ -13,7 +23,7 @@ void rtc_init(spi_t *io) {
 }
 
 uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
-  pin_low(io->clk);
+  pin_low(io->sclk);
   pin_high(io->ce);
   
   // Write read-command byte
@@ -23,11 +33,11 @@ uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
     pin_write(io->data, cmd & 0x01);
 
     if (bit < 7) {
-      CLK_CYCLE(io->clk);
+      CLK_CYCLE(io->sclk);
       cmd = cmd >> 1;
     } else {
       // prepare to read from rtc leaving clk pin high
-      pin_high(io->clk);
+      pin_high(io->sclk);
     }
   }
 
@@ -36,7 +46,7 @@ uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
   uint8_t data = 0;
 
   for (int bit = 0; bit < 8; bit++) {
-    CLK_CYCLE(io->clk);
+    CLK_CYCLE(io->sclk);
     data |= (pin_read(io->data) << bit);
   }
 
@@ -47,19 +57,19 @@ uint8_t rtc_read(spi_t *io, rtc_cmd_t cmd) {
 
 void rtc_write(spi_t *io, rtc_cmd_t cmd, uint8_t data) {
   pin_mode(io->data, OUTPUT);
-  pin_low(io->clk); // make sure CLK is low before we enable data transfer
+  pin_low(io->sclk); // make sure CLK is low before we enable data transfer
   pin_high(io->ce);
 
   for (uint8_t bit = 0; bit < 8; bit++) {
     pin_write(io->data, cmd & 0x01);
-    CLK_CYCLE(io->clk);
+    CLK_CYCLE(io->sclk);
 
     cmd >>= 1;
   }
 
   for (uint8_t bit = 0; bit < 8; bit++) {
     pin_write(io->data, data & 0x01);
-    CLK_CYCLE(io->clk);
+    CLK_CYCLE(io->sclk);
     
     data >>= 1;
   }
@@ -70,14 +80,14 @@ void rtc_write(spi_t *io, rtc_cmd_t cmd, uint8_t data) {
 void rtc_burst_read(spi_t *io, rtc_datetime_t *dst) {
   uint8_t cmd = ReadBurstClock;
 
-  pin_low(io->clk);
+  pin_low(io->sclk);
   pin_high(io->ce);
 
   // Send command LSB-first
   pin_mode(io->data, OUTPUT);
   for (int i = 0; i < 8; i++) {
     pin_write(io->data, cmd & 0x01);
-    CLK_CYCLE(io->clk);
+    CLK_CYCLE(io->sclk);
     cmd >>= 1;
   }
 
@@ -88,7 +98,7 @@ void rtc_burst_read(spi_t *io, rtc_datetime_t *dst) {
   for (int i = 0; i < 8; i++) {
     uint8_t data = 0;
     for (int bit = 0; bit < 8; bit++) {
-      CLK_CYCLE(io->clk);
+      CLK_CYCLE(io->sclk);
       data |= (pin_read(io->data) << bit);
     }
     regs[i] = data;
