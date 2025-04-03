@@ -51,8 +51,11 @@ int main(void) {
 
   rtc_set_datetime(&rtc_io, &dt);
 
-  uint8_t year = rtc_read(&rtc_io, ReadYear);
-  logger.debug_byte(year);
+  rtc_burst_read(&rtc_io, &dt);
+  logger.debug_byte(dt.sec);
+  logger.debug_byte(dt.min);
+  logger.debug_byte(dt.hour);
+  logger.debug_byte(dt.year);
 
   while (1)
     ;
